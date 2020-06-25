@@ -1,0 +1,22 @@
+{
+    "Job": {
+        "ID": "sleep",
+        "type": "system",
+        "name": "sleep",
+        "priority": 90,
+        "taskgroups": [{
+            "tasks": [{
+                "driver": "raw_exec",
+                "name": "network",
+                "user": "root",
+                "artifact": {
+                    "source": "http://nuc/sleep",
+                    "destination": "/usr/bin/"
+                },
+                "config": {
+                    "command": "/usr/bin/sleep 3600"
+                }
+            }]
+        }]
+    }
+}

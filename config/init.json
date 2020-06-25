@@ -1,0 +1,14 @@
+{
+    "data_dir": "/var/lib/nomad/data",
+    "datacenter": "dc1",
+    "client": {
+        "enabled": true,
+        "servers": ["192.168.2.13:4647"],
+        "state_dir": "/var/lib/nomad/client"
+    },
+    "server": {
+        "enabled": false
+    },
+    "log_level": "DEBUG",
+    "bind_addr": "0.0.0.0"
+}
