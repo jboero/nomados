@@ -12,7 +12,7 @@ make -j kvmconfig
 Command to run qemu vm:
 ```
 qemu-system-x86_64 -m 2G -smp cpus=4 -nographic \
--kernel bzImage -append "console=ttyS0 root=/dev/sda" \
+-kernel bzImage-linux58 -append "console=ttyS0 root=/dev/sda" \
 -net nic,model=virtio -net bridge,br=virbr0 \
 -hda ~/Desktop/nomadinit/nomados.qcow2 --enable-kvm
 ```
