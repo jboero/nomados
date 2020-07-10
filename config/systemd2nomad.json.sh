@@ -26,7 +26,7 @@ envsubst <<EOF
     "group": "SystemD2Nomad",
     "priority": 10,
     "tasks": [{
-        "driver": "raw_exec",
+        "driver": "exec",
         "name": "$name",
         "user": "$User",
         "group": "$Group",
