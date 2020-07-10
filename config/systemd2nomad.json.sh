@@ -20,21 +20,19 @@ export Group=root
 export DOLLAR='$'
 envsubst <<EOF
 {
-    "Job": {
-        "id": "$name",
+    "id": "$name",
+    "name": "$name",
+    "type": "system",
+    "group": "SystemD2Nomad",
+    "priority": 10,
+    "tasks": [{
+        "driver": "raw_exec",
         "name": "$name",
-        "type": "system",
-        "group": "SystemD2Nomad",
-        "priority": 10,
-        "tasks": [{
-            "driver": "raw_exec",
-            "name": "$name",
-            "user": "$User",
-            "group": "$Group",
-            "config": {
-                "command": "$ExecStart"
-            }
-        }]
-    }
+        "user": "$User",
+        "group": "$Group",
+        "config": {
+            "command": "$ExecStart"
+        }
+    }]
 }
 EOF
