@@ -25,14 +25,18 @@ envsubst <<EOF
     "type": "system",
     "group": "SystemD2Nomad",
     "priority": 10,
-    "tasks": [{
-        "driver": "exec",
-        "name": "$name",
-        "user": "$User",
-        "group": "$Group",
-        "config": {
-            "command": "$ExecStart"
-        }
+    "TaskGroups": [{
+        "Name": "vault.service",
+        "Count": 1,
+        "tasks": [{
+            "driver": "exec",
+            "name": "$name",
+            "user": "$User",
+            "group": "$Group",
+            "config": {
+                "command": "$ExecStart"
+            }
+        }]
     }]
 }
 EOF
