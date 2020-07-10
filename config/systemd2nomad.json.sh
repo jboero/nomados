@@ -20,21 +20,20 @@ export Group=root
 export DOLLAR='$'
 envsubst <<EOF
 {
-    "id": "$name",
-    "name": "$name",
-    "type": "system",
-    "group": "SystemD2Nomad",
-    "priority": 10,
+    "ID": "$name",
+    "Name": "$name",
+    "Type": "system",
+    "Priority": 10,
     "TaskGroups": [{
-        "Name": "vault.service",
+        "Name": "SystemD2Nomad",
         "Count": 1,
-        "tasks": [{
-            "driver": "exec",
-            "name": "$name",
-            "user": "$User",
-            "group": "$Group",
-            "config": {
-                "command": "$ExecStart"
+        "Tasks": [{
+            "Driver": "exec",
+            "Name": "$name",
+            "User": "$User",
+            "Sroup": "$Group",
+            "Config": {
+                "Command": "$ExecStart"
             }
         }]
     }]
