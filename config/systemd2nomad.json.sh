@@ -25,6 +25,7 @@ envsubst <<EOF
     "ID": "$name",
     "Name": "$name",
     "Type": "system",
+    "Datacenters": ["dc1"],
     "Priority": 10,
     "TaskGroups": [{
         "Name": "SystemD2Nomad",
