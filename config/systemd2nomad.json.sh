@@ -9,6 +9,8 @@ sed -e :a \
     -e 's/\$/\$\{DOLLAR\}/g' \
     -e 's/ /\\ /g' \
     -e 's/\t/\\t/g' \
+    -e 's/(/\\(/g' \
+    -e 's/)/\\)/g' \
     $1 > /tmp/service
 
 # Defaults here:
@@ -20,21 +22,23 @@ export Group=root
 export DOLLAR='$'
 envsubst <<EOF
 {
-    "Job": {
-        "id": "$name",
-        "name": "$name",
-        "type": "system",
-        "group": "SystemD2Nomad",
-        "priority": 10,
-        "tasks": [{
-            "driver": "raw_exec",
-            "name": "$name",
-            "user": "$User",
-            "group": "$Group",
-            "config": {
-                "command": "$ExecStart"
+    "ID": "$name",
+    "Name": "$name",
+    "Type": "system",
+    "Datacenters": ["dc1"],
+    "Priority": 10,
+    "TaskGroups": [{
+        "Name": "SystemD2Nomad",
+        "Count": 1,
+        "Tasks": [{
+            "Driver": "exec",
+            "Name": "$name",
+            "User": "$User",
+            "Sroup": "$Group",
+            "Config": {
+                "Command": "$ExecStart"
             }
         }]
-    }
+    }]
 }
 EOF

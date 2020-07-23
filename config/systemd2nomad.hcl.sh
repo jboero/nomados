@@ -10,6 +10,8 @@ sed -e :a \
     -e 's/\$/\$\{DOLLAR\}/g' \
     -e 's/ /\\ /g' \
     -e 's/\t/\\t/g' \
+    -e 's/(/\\(/g' \
+    -e 's/)/\\)/g' \
     $1 > /tmp/service
 
 
