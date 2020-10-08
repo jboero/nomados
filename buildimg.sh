@@ -1,8 +1,8 @@
 #!/bin/bash -x
 export B=/mnt/aux
 qemu-img create -f qcow2 -o size=4G nomados.qcow2
-
 qemu-nbd --connect=/dev/nbd0 nomados.qcow2
+
 mkfs.ext4 /dev/nbd0
 mount /dev/nbd0 $B
 
@@ -18,7 +18,11 @@ mkdir -p $B/modules
 mkdir -p $B/usr/sbin
 mkdir -p $B/etc/dhcp
 
+# Copy kernel from ./bzimage
+cp bzimage $B/
+
 # Copy minimal bins and libs.
+cp ./config/extlinux.conf $B/
 cp ./config/init.json $B/etc/nomad/
 cp ./sdhcp $B/sbin
 cp /usr/bin/{nomad,df} $B/usr/bin/
@@ -29,7 +33,11 @@ cp /etc/passwd $B/etc
 cp /lib64/{libpthread.so*,libc.so*,libtinfo.so*,libdl.so*,ld-*} \
    /lib64/{libcap.*,libz.*,libelf*,libmnl.so*} $B/lib64/
 
+# Build Nomad init
 gcc nomadinit.c -o $B/sbin/init
+
+# Install extlinux bootloader
+extlinux --install $B
 
 umount $B
 qemu-nbd --disconnect /dev/nbd0
