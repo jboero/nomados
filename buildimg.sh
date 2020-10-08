@@ -3,7 +3,11 @@ export B=/mnt/aux
 qemu-img create -f qcow2 -o size=4G nomados.qcow2
 qemu-nbd --connect=/dev/nbd0 nomados.qcow2
 
+# EXT4 entire device
 mkfs.ext4 /dev/nbd0
+
+# Enable discard/trim
+tune2fs -o discard /dev/nbd0
 mount /dev/nbd0 $B
 
 mkdir -p $B/{lib64,sbin,bin,usr/bin,usr/local/bin,var/lib/nomad,etc/nomad,lib/modules/$(uname -r)}
@@ -34,7 +38,7 @@ cp /lib64/{libpthread.so*,libc.so*,libtinfo.so*,libdl.so*,ld-*} \
    /lib64/{libcap.*,libz.*,libelf*,libmnl.so*} $B/lib64/
 
 # Experimoptional - UPX binpack Nomad to shrink it.
-#upx $B/usr/bin/nomad
+upx $B/usr/bin/nomad
 
 # Build Nomad init
 gcc nomadinit.c -o $B/sbin/init
@@ -45,5 +49,6 @@ extlinux --install $B
 umount $B
 qemu-nbd --disconnect /dev/nbd0
 
-#xz -T0 -f -k nomados.qcow2
+qemu-img convert -c -O qcow2 nomados.qcow2 nomados.compact.qcow2
 
+chown jboero *.qcow2
