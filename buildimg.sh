@@ -33,6 +33,9 @@ cp /etc/passwd $B/etc
 cp /lib64/{libpthread.so*,libc.so*,libtinfo.so*,libdl.so*,ld-*} \
    /lib64/{libcap.*,libz.*,libelf*,libmnl.so*} $B/lib64/
 
+# Experimoptional - UPX binpack Nomad to shrink it.
+#upx $B/usr/bin/nomad
+
 # Build Nomad init
 gcc nomadinit.c -o $B/sbin/init
 
