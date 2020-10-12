@@ -50,5 +50,3 @@ umount $B
 qemu-nbd --disconnect /dev/nbd0
 
 qemu-img convert -c -O qcow2 nomados.qcow2 nomados.compact.qcow2
-
-chown jboero *.qcow2
