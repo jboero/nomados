@@ -6,7 +6,7 @@ Source for Linux kernel built directly:
 ```
 git clone --depth=1 git://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
 cd linux
-make kvmconfig
+make kvm_guest.config
 make -j
 ```
 
