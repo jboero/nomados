@@ -1,3 +1,7 @@
+/*=============================================================================
+ |       Author:  John Boero - jboero@hashicorp.com
+ |  Description:  Simple custom init poc for Hashicorp NomadOS. 
+ *===========================================================================*/
 #include <stdlib.h>
 #include <stdio.h>
 #include <errno.h>
