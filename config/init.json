@@ -3,7 +3,15 @@
     "datacenter": "dc1",
     "client": {
         "enabled": true,
-        "servers": ["nomadeserver:4647"],
+        "options": {
+            "user.denylist": "",
+            "user.checked_drivers": "exec,raw_exec"
+        },
+        "server_join": {
+            "retry_join": ["nomad"],
+            "retry_max": 10,
+            "retry_interval": "1s"
+        },
         "state_dir": "/var/lib/nomad/client"
     },
     "server": {

@@ -32,7 +32,7 @@ int ifup(char *ifname)
 
     ifr.ifr_flags |= IFF_UP;
     ioctl(sockfd, SIOCSIFFLAGS, &ifr);
-    
+
     printf("IFUP: %s\n", ifname);
     return sockfd;
 }
@@ -59,16 +59,20 @@ int main()
     mkdir("/proc/sys",      S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
     mkdir("/proc/sys/fs",   S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
     mkdir("/proc/sys/fs/binfmt_misc", S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
-    mounter("binfmt_misc","/proc/sys/fs/binfmt_misc","binfmt_misc", 
+    mounter("binfmt_misc","/proc/sys/fs/binfmt_misc","binfmt_misc",
         MS_NODEV | MS_NOEXEC | MS_NOEXEC, "");
-    
+
     mkdir("/tmp",         S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
     mounter("tmpfs",      "/tmp",             "tmpfs",     0, "");
     mkdir("/sys",         S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
     mounter("sysfs",      "/sys",             "sysfs",     0, "");
     mkdir("/sys/fs",      S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
     mounter("selinuxfs",  "/sys/fs/selinux",  "selinuxfs", 0, "");
+    mkdir("/sys/fs/cgroup",      S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
+    mounter("cgroup",  "/sys/fs/cgroup",  "cgroup2", 0, "");
 
+    // Set default hostname in case DHCP doesn't set it.
+    sethostname("nomados", 7);
     while (1)
     {
         pid_t child = fork();
@@ -81,16 +85,19 @@ int main()
             ifup("lo");
             ifup("eth0");
             setenv("PATH", "/sbin:/usr/sbin:/usr/bin:/bin:/usr/local/bin", 1);
-            system("/sbin/sdhcp -d eth0");
+            system("/sbin/sdhcp eth0");
             system("/sbin/ip a");
-            system("/usr/bin/nomad agent -dev -config=/etc/nomad/init.json");
+            system("cat /etc/resolv.conf");
+            system("/usr/bin/nomad agent -dev -config=/etc/nomad/init.json >/var/log/nomad.log 2>/var/log/nomad.err");
+            // Only enable shell for debugging.
+			//system("/bin/bash");
         }
         while (1)
         {
+            // TODO should handle signals, acpi events, etc.
             sleep(1);
             wait(0);
         }
     }
-    
     return 0;
 }
