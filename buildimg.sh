@@ -1,4 +1,10 @@
 #!/bin/bash -x
+# jboero@hashicorp.com
+# NomadOS experimental build script.  This uses qemu-nbd to create and mount a new qcow2 image.
+# 1. Formats the whole device Ext4
+# 2. Builds nomadinit and copies minimal dependencies into said image: kernel, nomad.
+# 3. Installs extlinux bootloader (without initrd) and unmounts.
+# 4. Unmounts and compacts the image to minimize size.
 export B=/mnt/qcow
 umask 0022
 qemu-img create -f qcow2 -o size=100G /tmp/nomados.qcow2
