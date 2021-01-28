@@ -69,4 +69,3 @@ mv -f /tmp/nomados.compact.qcow2 /tmp/nomados.qcow2
 qemu-img convert -f qcow2 /tmp/nomados.qcow2 -O vmdk /tmp/nomados.vmdk&
 chown jboero:kvm /tmp/nomados.qcow2
 chmod 660 /tmp/nomados.qcow2
-
