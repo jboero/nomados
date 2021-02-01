@@ -17,61 +17,82 @@ mkfs.ext4 /dev/nbd0
 tune2fs -o discard /dev/nbd0
 mount /dev/nbd0 $B
 
-mkdir -p $B/syslinux
-mkdir -p $B/{lib64,sbin,bin,usr/bin,usr/local/bin,var/lib/nomad/data/plugins,etc/nomad,lib/modules/$(uname -r)}
-mkdir -p $B/sys/{kernel/tracing,fs/fuse/connections}
-mkdir -p $B/dev/{pts,mqueue,hugepages,kernel/debug}
-mkdir -p $B/proc/sys/fs/binfmt_misc
-mkdir -p $B/var/{run,log,lib}
-mkdir -p $B/var/lib/dhclient
-mkdir -p $B/var/lib/nomad/data/{plugins,allocations}
-mkdir -p $B/tmp $B/sys/kernel/tracing $B/sys/fs/fuse/connections $B/sys/kernel/security
-mkdir -p $B/modules
-mkdir -p $B/usr/sbin
-mkdir -p $B/etc/dhcp
-mkdir -p $B/etc/pki/ca-trust/extracted/pem/
+pushd $B
+mkdir -p syslinux
+mkdir -p {usr/{lib,lib64},sbin,bin,usr/bin,usr/local/bin,var/lib/nomad/data/plugins,etc/nomad,usr/lib/modules/$(uname -r)}
+mkdir -p sys/{kernel/tracing,fs/fuse/connections}
+mkdir -p dev/{pts,mqueue,hugepages,kernel/debug}
+mkdir -p proc/sys/fs/binfmt_misc
+mkdir -p var/{tmp,run,log,lib} var/lib/dhclient
+mkdir -p var/lib/nomad/data/{plugins,allocations}
+mkdir -p tmp sys/kernel/tracing sys/fs/fuse/connections sys/kernel/security
+mkdir -p modules usr/sbin etc/dhcp
+mkdir -p run/systemd/journal/
+ln -s usr/lib64 lib64
+ln -s usr/lib   lib
+popd
 
 # Copy kernel from ./bzImage
 cp bzImage $B/syslinux/
+cp -an /usr/lib64/{ld-*.so*,libc-*} $B/usr/lib64/
+
+# Helper to add a local binary and all lib dependencies
+function add_dep()
+{
+	for dep in $(ldd -v $(which $1) | grep '/.*:' | sed 's/://g'); do
+		if [ "$dep" == "$(which $1)" ] ; then
+			cp -n "$dep" $(dirname "$B$dep")
+		else
+			cp -n "$dep"* $(dirname "$B$dep")
+		fi
+	done
+}
+
+# EXT Linux bootloader
+cp /boot/extlinux/{vesamenu,libcom32,libutil}.c32 \
+   ./config/{splash.png,extlinux.conf} $B/syslinux/
+cp ./config/init.json $B/etc/nomad/
+cp ./sdhcp $B/sbin/
+cp -a /etc/pki $B/etc/
 
 # Copy minimal bins and libs.
-cp /boot/extlinux/{vesamenu.c32,libcom32.c32,libutil.c32} \
-   ./config/{splash.png,extlinux.conf} $B/syslinux/
+for cmd in bash sh su nomad df strace grep kill pkill ip nologin cat tail ls ipcalc ps stty nologin; do
+	add_dep $cmd
+done
+cp /etc/localtime $B/etc/
+ln -s /usr/bin/bash $B/bin
+ln -s /usr/bin/sh $B/bin
+cp -a /usr/lib64/{libcrypt*,libnsl*} $B/usr/lib64/
+
+# NSS,PAM
+cp -a /usr/lib64/{security,libnss*} $B/usr/lib64/
+cp -a /etc/{authselect,default,login.defs} $B/etc/
+cp -a ./config/pam.d $B/etc/
 cp ./config/{group,passwd,shadow,nsswitch.conf} $B/etc/
-#cp -a /etc/{group,passwd,shadow,login.defs,default} ./config/nsswitch.conf $B/etc/
-cp ./config/init.json $B/etc/nomad/
-cp ./sdhcp /sbin/{ip,nologin} $B/sbin
-cp /usr/bin/{su,nomad,df,strace,grep,kill,pkill} $B/usr/bin/
-cp /bin/{bash,sh,cat,tail,ls,ipcalc} $B/bin/
-cp /etc/pki/ca-trust/extracted/pem/tls-ca-bundle.pem \
-   $B/etc/pki/ca-trust/extracted/pem/
 
 # Podman option
-#mkdir -p $B/run/podman
-#cp nomad-driver-podman $B/var/lib/nomad/data/plugins
-#cp podman-1.9.2 $B/usr/bin/podman
-
-cp /lib64/ld-*.so* \
-   /lib64/lib{pthread,c,tinfo,dl}.so* \
-   /lib64/lib{cap*,z,elf*,mnl,procps}.so* \
-   /lib64/lib{pam*,audit,util,nss_compat,nsl,nss_files}.so* \
-   /lib64/lib{rt,dw,selinux,lzma,bz2,pcre*}.so* \
-   $B/lib64/ || exit 1
-
-# Experimoptional - UPX binpack Nomad to shrink it.
-#upx $B/usr/bin/nomad
+cp -a /etc/{containers,cni} $B/etc/
+cp nomad-driver-podman $B/var/lib/nomad/data/plugins
+for cmd in podman conmon crun nsenter; do
+	add_dep $cmd
+done
 
 # Build Nomad init
 gcc nomadinit.c -o $B/sbin/init || exit 1
+for dep in $(ldd -v $(which $1) | grep '/.*:' | sed 's/://g'); do
+	cp -n "$dep*" "$B$dep"
+done
 
 # Install extlinux bootloader
 extlinux --install $B
 
+# Inspect final layout
+tree $B
 umount $B
 qemu-nbd --disconnect /dev/nbd0
 
 qemu-img convert -c -O qcow2 /tmp/nomados.qcow2 /tmp/nomados.compact.qcow2
 mv -f /tmp/nomados.compact.qcow2 /tmp/nomados.qcow2
-qemu-img convert -f qcow2 /tmp/nomados.qcow2 -O vmdk /tmp/nomados.vmdk&
+#qemu-img convert -f qcow2 /tmp/nomados.qcow2 -O vmdk /tmp/nomados.vmdk&
 chown jboero:kvm /tmp/nomados.qcow2
 chmod 660 /tmp/nomados.qcow2

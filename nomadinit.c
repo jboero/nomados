@@ -89,12 +89,13 @@ int main()
             ifup("lo");
             ifup("eth0");
             setenv("PATH", "/sbin:/usr/sbin:/usr/bin:/bin:/usr/local/bin", 1);
-            system("/sbin/sdhcp eth0");
-            system("/sbin/ip a");
+            system("/sbin/sdhcp eth0 || echo DHCP Failure");
+            system("/usr/sbin/ip a");
             system("cat /etc/resolv.conf");
-            system("/usr/bin/nomad agent -dev -config=/etc/nomad/init.json >/var/log/nomad.log 2>/var/log/nomad.err");
+			system("/usr/bin/podman system service -t 0&");
+            system("/usr/bin/nomad agent -dev -config=/etc/nomad/init.json >/var/log/nomad.log 2>/var/log/nomad.err&");
             // Only enable shell for debugging.
-			//system("/bin/bash");
+			system("/usr/bin/bash");
         }
         while (1)
         {
