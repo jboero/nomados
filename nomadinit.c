@@ -92,7 +92,7 @@ int main()
             system("/sbin/sdhcp eth0 || echo DHCP Failure");
             system("/usr/sbin/ip a");
             system("cat /etc/resolv.conf");
-			system("/usr/bin/podman system service -t 0&");
+			//system("/usr/bin/podman system service -t 0&");
             system("/usr/bin/nomad agent -dev -config=/etc/nomad/init.json >/var/log/nomad.log 2>/var/log/nomad.err&");
             // Only enable shell for debugging.
 			system("/usr/bin/bash");
