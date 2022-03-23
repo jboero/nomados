@@ -26,4 +26,4 @@ qemu-system-x86_64 -m 2G -smp cpus=4 -nographic \
 Nomad is run at boot with config config/init.json
 
 # NomadOS
-NomadOS can be built from the Nomad Init project.  It adds the extlinux bootloader and bare minimal OS into a fully-contained QCOW or VMDK for virtualized or cloud compatible image.  It is currently an experimental community project and not supported by HashiCorp.  It can be built on a Linux distribution so long as all dependency paths in the build script are present in the environment.
+NomadOS can be built from the Nomad Init project.  It adds the extlinux bootloader and bare minimal OS into a fully-contained QCOW or VMDK for virtualized or cloud compatible image.  It is currently an experimental community project and not supported by HashiCorp.  It can be built on a Linux distribution so long as all dependency paths in the build script are present in the environment.  Note this is not to be confused with NomadBSD which is an unrelated project.  https://nomadbsd.org/
