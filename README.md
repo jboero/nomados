@@ -26,7 +26,8 @@ qemu-system-x86_64 -m 2G -smp cpus=4 -nographic \
 It's possible to run this in a cloud provided you can get the cloud to regocnize it as bootable media. Using simple EXTLINUX and BIOS may not be enough for some hypervisors requiring UEFI or secure boot.
 ![image](https://miro.medium.com/max/720/1*Dz6x39NuHnH1leRb6Hp5Og.jpeg)
 
-Nomad is run at boot with config config/init.json
+Nomad is run at boot with config config/init.json.
+Jobs can declare services with the "exec" or "raw-exec" task driver with artifacts containing what needs to be run. For example it's easy to declare a system service which downloads Podman and runs it as a daemon on all or some nodes that join the cluster.  Then the Podman driver would be available on all nodes which can successfully download and run Podman -d.
 
 # NomadOS
 NomadOS can be built from the Nomad Init project.  It adds the extlinux bootloader and bare minimal OS into a fully-contained QCOW or VMDK for virtualized or cloud compatible image.  It is currently an experimental community project and not supported by HashiCorp.  It can be built on a Linux distribution so long as all dependency paths in the build script are present in the environment.  Note this is not to be confused with NomadBSD which is an unrelated project.  https://nomadbsd.org/
