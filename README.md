@@ -22,6 +22,9 @@ qemu-system-x86_64 -m 2G -smp cpus=4 -nographic \
 -net nic,model=virtio -net bridge,br=virbr0 \
 -hda ~/Desktop/nomadinit/nomados.qcow2 --enable-kvm
 ```
+# Running in Cloud
+It's possible to run this in a cloud provided you can get the cloud to regocnize it as bootable media. Using simple EXTLINUX and BIOS may not be enough for some hypervisors requiring UEFI or secure boot.
+![image](https://miro.medium.com/max/720/1*Dz6x39NuHnH1leRb6Hp5Og.jpeg)
 
 Nomad is run at boot with config config/init.json
 
