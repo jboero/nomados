@@ -1,6 +1,8 @@
 # Nomad Init
 An experiment after Hashiconf Digital 2020 for building a minimal Linux Nomad agent. This build has been developed and tested on Fedora 32, and copies some local dependencies into the qcow image during packaging.  Qemu-img must be installed and the nbd kernel module loaded to mount the qcow2 image created during `buildimg.sh`.  Accompanying blog post on Medium: https://medium.com/@boeroboy/nomad-vs-systemd-e0db80d34e8a
 
+[UPDATE] This project was abandoned after multiple proposals and customer requests. HashiCorp had no interest.
+
 Here we attempt to turn HashiCorp's Cloud Operating Model upside down, using Nomad as a foundation to run everything from scratch rather than Terraform to provision first.
 ![image](https://user-images.githubusercontent.com/7536012/159683583-618a326d-80ab-4d37-8f9a-d54d6fb18635.png)
 
